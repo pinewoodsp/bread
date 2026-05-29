@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍞 빵 만들기 게임</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fdf6e3;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== 공통 화면 ===== */
+        .screen {
+            display: none;
+            width: 480px;
+            height: 640px;
+            background: #fff8f0;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ===== 타이머 ===== */
+        .timer {
+            position: absolute;
+            top: 18px;
+            left: 24px;
+            background: #222;
+            color: #fff;
+            border-radius: 20px;
+            padding: 6px 18px;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* ===== 화면 1: 재료 준비 ===== */
+        #screen-ingredients {
+            justify-content: flex-start;
+            padding-top: 70px;
+        }
+
+        .ingredients-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #a0522d;
+            margin-bottom: 10px;
+        }
+
+        .counter {
+            width: 90%;
+            background: #f5e6c8;
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.15s;
+            user-select: none;
+        }
+
+        .ingredient-item:active {
+            transform: scale(0.92);
+        }
+
+        .ingredient-item .icon {
+            font-size: 2.5rem;
+            transition: transform 0.2s;
+        }
+
+        .ingredient-item.added .icon {
+            filter: grayscale(0.7) opacity(0.5);
+        }
+
+        .ingredient-item span {
+            font-size: 0.8rem;
+            color: #7a5230;
+            margin-top: 4px;
+        }
+
+        /* 체크마크 */
+        .check {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #4caf50;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .ingredient-item.added .check {
+            opacity: 1;
+        }
+
+        .ingredient-item {
+            position: relative;
+        }
+
+        /* 반죽 그릇 */
+        .bowl-area {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bowl {
+            font-size: 5rem;
+            transition: transform 0.3s cubic-bezier(.36,.07,.19,.97);
+        }
+
+        .bowl.shake {
+            animation: bowlShake 0.4s ease;
+        }
+
+        @keyframes bowlShake {
+            0%   { transform: rotate(0deg) scale(1); }
+            20%  { transform: rotate(-8deg) scale(1.08); }
+            40%  { transform: rotate(8deg) scale(1.08); }
+            60%  { transform: rotate(-5deg) scale(1.05); }
+            80%  { transform: rotate(3deg) scale(1.02); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        /* 소금 파티클 */
+        .salt-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: saltFall 0.7s ease-out forwards;
+            box-shadow: 0 0 3px rgba(0,0,0,0.2);
+        }
+
+        @keyframes saltFall {
+            0%   { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(60px) scale(0.3); }
+        }
+
+        /* 레시피 버튼 */
+        .recipe-btn {
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .recipe-btn:hover { transform: scale(1.2); }
+
+        /* 레시피 카드 */
+        .recipe-card {
+            position: absolute;
+            top: 50px;
+            right: 16px;
+            width: 200px;
+            background: #fffde7;
+            border: 2px solid #f9a825;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.85rem;
+            color: #5d4037;
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.12);
+            display: none;
+            z-index: 10;
+        }
+
+        .recipe-card.show { display: block; }
+        .recipe-card h3 { color: #f57f17; margin-bottom: 8px; font-size: 1rem; }
+        .recipe-card ol { padding-left: 16px; }
+        .recipe-card li { margin-bottom: 4px; }
+        .recipe-card li.done { color: #aaa; text-decoration: line-through; }
+
+        /* 다음 버튼 */
+        .next-btn {
+            margin-top: 16px;
+            padding: 12px 36px;
+            background: linear-gradient(135deg, #f9a825, #f57f17);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(245,127,23,0.35);
+            transition: transform 0.15s, box-shadow 0.15s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .next-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+            animation: popIn 0.4s cubic-bezier(.36,.07,.19,.97);
+        }
+
+        .next-btn:hover { transform: scale(1.07); box-shadow: 0 6px 18px rgba(245,127,23,0.4); }
+
+        @keyframes popIn {
+            0%   { transform: scale(0.7); }
+            70%  { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* ===== 화면 2: 반죽 미니게임 ===== */
+        #screen-mixing {
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .mixing-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #a0522d;
+            text-align: center;
+        }
+
+        .mixing-subtitle {
+            font-size: 0.95rem;
+            color: #888;
+            text-align: center;
+            margin-top: -16px;
+        }
+
+        /* 슬라이더 바 */
+        .slider-container {
+            width: 85%;
+            height: 40px;
+            background: #f5e6c8;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #deb887;
+        }
+
+        .slider-track {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* 목표 구간 (초록) */
+        .slider-target {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: rgba(76, 175, 80, 0.35);
+            border: 2px solid #4caf50;
+            border-radius: 4px;
+            transition: left 0.05s;
+        }
+
+        /* 이동하는 마커 */
+        .slider-marker {
+            position: absolute;
+            top: 4px;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #f9a825, #f57f17);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: left 0.016s linear;
+        }
+
+        .chances {
+            font-size: 1rem;
+            color: #f57f17;
+            font-weight: bold;
+        }
+
+        .hit-feedback {
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 36px;
+            text-align: center;
+            transition: opacity 0.3s;
+        }
+
+        .hit-feedback.hit   { color: #4caf50; }
+        .hit-feedback.miss  { color: #f44336; }
+
+        /* 반죽 모양 */
+        .dough-display {
+            font-size: 5rem;
+            transition: transform 0.3s cubic-bezier(.36,.07,.19,.97);
+        }
+
+        .dough-display.squish {
+            animation: doughSquish 0.5s cubic-bezier(.36,.07,.19,.97);
+        }
+
+        @keyframes doughSquish {
+            0%   { transform: scale(1, 1); }
+            20%  { transform: scale(1.3, 0.7); }
+            50%  { transform: scale(0.85, 1.2); }
+            75%  { transform: scale(1.1, 0.9); }
+            100% { transform: scale(1, 1); }
+        }
+
+        .tap-btn {
+            padding: 14px 48px;
+            background: linear-gradient(135deg, #a5d6a7, #388e3c);
+            color: white;
+            border: none;
+            border-radius: 28px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(56,142,60,0.35);
+            transition: transform 0.1s;
+            user-select: none;
+        }
+
+        .tap-btn:active { transform: scale(0.94); }
+
+        /* ===== 화면 3: 오븐 ===== */
+        #screen-oven {
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .oven-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #a0522d;
+        }
+
+        .oven-display {
+            font-size: 5rem;
+            transition: filter 0.5s;
+        }
+
+        .oven-temp {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f44336;
+        }
+
+        /* 온도 게이지 */
+        .gauge-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 70%;
+        }
+
+        .gauge-bar {
+            width: 100%;
+            height: 28px;
+            background: #f5e6c8;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid #deb887;
+            position: relative;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffeb3b, #ff9800, #f44336);
+            border-radius: 14px;
+            transition: width 0.3s ease;
+        }
+
+        .gauge-target-marker {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: #4caf50;
+            border-radius: 2px;
+        }
+
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* 연타 버튼 */
+        .smash-btn {
+            padding: 14px 48px;
+            background: linear-gradient(135deg, #ef9a9a, #c62828);
+            color: white;
+            border: none;
+            border-radius: 28px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(198,40,40,0.35);
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        .smash-btn:active { transform: scale(0.93); }
+
+        .oven-feedback {
+            font-size: 1rem;
+            color: #888;
+            min-height: 24px;
+        }
+
+        /* ===== 화면 4: 완성 ===== */
+        #screen-result {
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .result-bread {
+            font-size: 7rem;
+            animation: breadFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes breadFloat {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-12px); }
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f57f17;
+            text-align: center;
+        }
+
+        .result-subtitle {
+            font-size: 1rem;
+            color: #888;
+            text-align: center;
+        }
+
+        .stars {
+            font-size: 2rem;
+            letter-spacing: 6px;
+        }
+
+        .retry-btn {
+            padding: 12px 36px;
+            background: linear-gradient(135deg, #f9a825, #f57f17);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(245,127,23,0.35);
+            transition: transform 0.15s;
+        }
+        .retry-btn:hover { transform: scale(1.07); }
+
+        /* 반짝이 파티클 */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 1.5rem;
+            animation: sparklePop 1s ease-out forwards;
+        }
+
+        @keyframes sparklePop {
+            0%   { opacity: 1; transform: scale(0) translateY(0); }
+            50%  { opacity: 1; transform: scale(1.2) translateY(-30px); }
+            100% { opacity: 0; transform: scale(0.5) translateY(-60px); }
+        }
+
+        /* 알림 토스트 */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<!-- 토스트 알림 -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== 화면 1: 재료 준비 ===== -->
+<div class="screen active" id="screen-ingredients">
+    <div class="timer" id="timer1">00:00</div>
+
+    <div class="recipe-btn" id="recipeBtn">📋</div>
+    <div class="recipe-card" id="recipeCard">
+        <h3>🍞 레시피</h3>
+        <ol id="recipeList">
+            <li id="r-flour">밀가루</li>
+            <li id="r-salt">소금</li>
+            <li id="r-sugar">설탕</li>
+            <li id="r-water">물</li>
+            <li id="r-yeast">이스트</li>
+        </ol>
+    </div>
+
+    <div class="ingredients-title">재료를 반죽에 넣어요!</div>
+
+    <div class="counter">
+        <div class="ingredient-item" id="ing-flour" onclick="addIngredient('flour', event)">
+            <div class="icon">🌾</div>
+            <span>밀가루</span>
+            <div class="check">✓</div>
+        </div>
+        <div class="ingredient-item" id="ing-salt" onclick="addIngredient('salt', event)">
+            <div class="icon">🧂</div>
+            <span>소금</span>
+            <div class="check">✓</div>
+        </div>
+        <div class="ingredient-item" id="ing-sugar" onclick="addIngredient('sugar', event)">
+            <div class="icon">🍬</div>
+            <span>설탕</span>
+            <div class="check">✓</div>
+        </div>
+        <div class="ingredient-item" id="ing-water" onclick="addIngredient('water', event)">
+            <div class="icon">💧</div>
+            <span>물</span>
+            <div class="check">✓</div>
+        </div>
+        <div class="ingredient-item" id="ing-yeast" onclick="addIngredient('yeast', event)">
+            <div class="icon">🫧</div>
+            <span>이스트</span>
+            <div class="check">✓</div>
+        </div>
+    </div>
+
+    <div class="bowl-area">
+        <div class="bowl" id="bowl">🥣</div>
+    </div>
+
+    <button class="next-btn" id="nextBtn1" onclick="goToMixing()">반죽하러 가기 →</button>
+</div>
+
+<!-- ===== 화면 2: 반죽 미니게임 ===== -->
+<div class="screen" id="screen-mixing">
+    <div class="timer" id="timer2">00:00</div>
+
+    <div class="mixing-title">반죽 미니게임!</div>
+    <div class="mixing-subtitle">초록 칸에 맞춰서 탭하세요 (3번 기회)</div>
+
+    <div class="dough-display" id="doughDisplay">🫓</div>
+
+    <div class="slider-container" id="sliderContainer">
+        <div class="slider-target" id="sliderTarget"></div>
+        <div class="slider-marker" id="sliderMarker"></div>
+    </div>
+
+    <div class="chances" id="chancesDisplay">기회: ❤️❤️❤️</div>
+    <div class="hit-feedback" id="hitFeedback"></div>
+
+    <button class="tap-btn" id="tapBtn" onclick="tapSlider()">탭!</button>
+</div>
+
+<!-- ===== 화면 3: 오븐 ===== -->
+<div class="screen" id="screen-oven">
+    <div class="timer" id="timer3">00:00</div>
+
+    <div class="oven-title">🔥 오븐에 굽기!</div>
+    <div class="oven-display" id="ovenDisplay">🍞</div>
+    <div class="oven-temp" id="ovenTemp">0°C / 목표: 180°C</div>
+
+    <div class="gauge-wrap">
+        <div class="gauge-bar">
+            <div class="gauge-fill" id="gaugeFill"></div>
+            <div class="gauge-target-marker" id="gaugeTarget"></div>
+        </div>
+        <div class="gauge-labels">
+            <span>0°C</span>
+            <span>100°C</span>
+            <span>200°C</span>
+            <span>300°C</span>
+        </div>
+    </div>
+
+    <div class="oven-feedback" id="ovenFeedback">버튼을 연타해서 온도를 올려요!</div>
+    <button class="smash-btn" id="smashBtn" onclick="smashOven()">🔥 가열!</button>
+</div>
+
+<!-- ===== 화면 4: 완성 ===== -->
+<div class="screen" id="screen-result">
+    <div class="result-bread" id="resultBread">🍞</div>
+    <div class="result-title" id="resultTitle">완벽한 빵이야!! 🎉</div>
+    <div class="stars" id="resultStars">⭐⭐⭐</div>
+    <div class="result-subtitle" id="resultSubtitle">최고의 빵을 구웠어요!</div>
+    <button class="retry-btn" onclick="restartGame()">다시 하기 🔄</button>
+</div>
+
+<script>
+// ===================================================
+//  전역 상태
+// ===================================================
+let gameState = {
+    screen: 1,
+    ingredients: { flour: false, salt: false, sugar: false, water: false, yeast: false },
+    score: 0,         // 반죽 성공 횟수
+    ovenTemp: 0,      // 현재 온도
+    timerSec: 0,
+    timerInterval: null,
+};
+
+const TARGET_TEMP   = 180;
+const MAX_TEMP      = 300;
+const TEMP_PER_TAP  = 8;
+const TEMP_DECAY    = 0.5;   // 초당 식는 온도
+const PERFECT_RANGE = 15;    // ±15°C 안이면 완벽
+
+// ===================================================
+//  타이머
+// ===================================================
+function startTimer(id) {
+    if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+    gameState.timerSec = 0;
+    gameState.timerInterval = setInterval(() => {
+        gameState.timerSec++;
+        const m = String(Math.floor(gameState.timerSec / 60)).padStart(2, '0');
+        const s = String(gameState.timerSec % 60).padStart(2, '0');
+        const el = document.getElementById(id);
+        if (el) el.textContent = `${m}:${s}`;
+    }, 1000);
+}
+
+// ===================================================
+//  토스트
+// ===================================================
+function showToast(msg, duration = 1500) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ===================================================
+//  화면 전환
+// ===================================================
+function goToScreen(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(`screen-${['ingredients','mixing','oven','result'][n-1]}`).classList.add('active');
+    gameState.screen = n;
+}
+
+// ===================================================
+//  화면 1: 재료 준비
+// ===================================================
+startTimer('timer1');
+
+// 레시피 토글
+document.getElementById('recipeBtn').addEventListener('click', () => {
+    document.getElementById('recipeCard').classList.toggle('show');
+});
+
+function addIngredient(type, event) {
+    if (gameState.ingredients[type]) return;
+    gameState.ingredients[type] = true;
+
+    // 아이템 비활성화
+    const item = document.getElementById(`ing-${type}`);
+    item.classList.add('added');
+
+    // 레시피 줄 완료 표시
+    const rMap = { flour:'r-flour', salt:'r-salt', sugar:'r-sugar', water:'r-water', yeast:'r-yeast' };
+    document.getElementById(rMap[type]).classList.add('done');
+
+    // 소금이면 파티클
+    if (type === 'salt') spawnSaltParticles(event);
+
+    // 그릇 흔들기
+    const bowl = document.getElementById('bowl');
+    bowl.classList.remove('shake');
+    void bowl.offsetWidth;
+    bowl.classList.add('shake');
+    setTimeout(() => bowl.classList.remove('shake'), 450);
+
+    // 모두 추가됐으면 버튼 표시
+    const allDone = Object.values(gameState.ingredients).every(v => v);
+    if (allDone) {
+        document.getElementById('nextBtn1').classList.add('visible');
+        showToast('재료 준비 완료! 반죽하러 가볼까요? 🎉');
+    }
+}
+
+function spawnSaltParticles(event) {
+    const screen = document.getElementById('screen-ingredients');
+    const rect = screen.getBoundingClientRect();
+    for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'salt-particle';
+        const x = event.clientX - rect.left + (Math.random() - 0.5) * 40;
+        const y = event.clientY - rect.top  + (Math.random() - 0.5) * 20;
+        p.style.left = x + 'px';
+        p.style.top  = y + 'px';
+        screen.appendChild(p);
+        setTimeout(() => p.remove(), 800);
+    }
+}
+
+function goToMixing() {
+    goToScreen(2);
+    startTimer('timer2');
+    initMixing();
+}
+
+// ===================================================
+//  화면 2: 반죽 미니게임
+// ===================================================
+let sliderX       = 0;
+let sliderDir     = 1;
+let sliderSpeed   = 2.8;
+let targetLeft    = 0;
+let targetWidth   = 0;
+let chances       = 3;
+let hitCount      = 0;
+let sliderRAF     = null;
+const TOTAL_HITS  = 3;   // 3번 성공해야 완성
+
+function initMixing() {
+    chances  = 3;
+    hitCount = 0;
+    sliderX  = 0;
+    sliderDir = 1;
+    gameState.score = 0;
+    updateChancesDisplay();
+    randomTarget();
+    requestAnimationFrame(animateSlider);
+}
+
+function randomTarget() {
+    const container = document.getElementById('sliderContainer');
+    const W = container.offsetWidth;
+    const markerW = 32;
+    targetWidth = Math.floor(Math.random() * 50) + 60; // 60~110px
+    targetLeft  = Math.floor(Math.random() * (W - targetWidth - markerW)) + markerW / 2;
+    const tgt = document.getElementById('sliderTarget');
+    tgt.style.left  = targetLeft + 'px';
+    tgt.style.width = targetWidth + 'px';
+}
+
+function animateSlider() {
+    const container = document.getElementById('sliderContainer');
+    const W = container.offsetWidth - 32;
+    sliderX += sliderDir * sliderSpeed;
+    if (sliderX >= W) { sliderX = W; sliderDir = -1; }
+    if (sliderX <= 0) { sliderX = 0;  sliderDir =  1; }
+    document.getElementById('sliderMarker').style.left = sliderX + 'px';
+    sliderRAF = requestAnimationFrame(animateSlider);
+}
+
+function tapSlider() {
+    if (chances <= 0) return;
+
+    const markerCenter = sliderX + 16;
+    const isHit = markerCenter >= targetLeft && markerCenter <= targetLeft + targetWidth;
+
+    const feedback = document.getElementById('hitFeedback');
+    const dough    = document.getElementById('doughDisplay');
+
+    if (isHit) {
+        hitCount++;
+        gameState.score++;
+        feedback.textContent = '👍 좋아요!';
+        feedback.className = 'hit-feedback hit';
+        dough.classList.remove('squish');
+        void dough.offsetWidth;
+        dough.classList.add('squish');
+        showToast('찰떡 같은 타이밍! 👏');
+        randomTarget();   // 새 목표 위치
+
+        if (hitCount >= TOTAL_HITS) {
+            // 반죽 완성!
+            cancelAnimationFrame(sliderRAF);
+            feedback.textContent = '🎊 반죽 완성!';
+            document.getElementById('tapBtn').disabled = true;
+            setTimeout(() => {
+                goToScreen(3);
+                startTimer('timer3');
+                initOven();
+            }, 1200);
+        }
+    } else {
+        chances--;
+        updateChancesDisplay();
+        feedback.textContent = '😅 미스!';
+        feedback.className = 'hit-feedback miss';
+        showToast('아깝다! 다시 도전!');
+
+        if (chances <= 0) {
+            cancelAnimationFrame(sliderRAF);
+            feedback.textContent = '😢 기회 소진... 다시!';
+            document.getElementById('tapBtn').disabled = true;
+            setTimeout(() => {
+                // 기회 리셋 후 재도전
+                document.getElementById('tapBtn').disabled = false;
+                hitCount = 0;
+                chances = 3;
+                updateChancesDisplay();
+                randomTarget();
+                requestAnimationFrame(animateSlider);
+                feedback.textContent = '';
+            }, 1500);
+        }
+    }
+}
+
+function updateChancesDisplay() {
+    const hearts = ['❤️','❤️','❤️'];
+    for (let i = chances; i < 3; i++) hearts[i] = '🖤';
+    document.getElementById('chancesDisplay').textContent = '기회: ' + hearts.join('');
+}
+
+// ===================================================
+//  화면 3: 오븐
+// ===================================================
+let ovenDecayInterval = null;
+
+function initOven() {
+    gameState.ovenTemp = 0;
+    updateGauge();
+    document.getElementById('ovenFeedback').textContent = '버튼을 연타해서 온도를 올려요!';
+    document.getElementById('smashBtn').disabled = false;
+
+    // 온도 서서히 낮아짐
+    if (ovenDecayInterval) clearInterval(ovenDecayInterval);
+    ovenDecayInterval = setInterval(() => {
+        if (gameState.ovenTemp > 0) {
+            gameState.ovenTemp = Math.max(0, gameState.ovenTemp - TEMP_DECAY);
+            updateGauge();
+        }
+    }, 100);
+
+    // 목표 마커 위치 설정
+    const pct = (TARGET_TEMP / MAX_TEMP) * 100;
+    document.getElementById('gaugeTarget').style.left = pct + '%';
+}
+
+function smashOven() {
+    gameState.ovenTemp = Math.min(MAX_TEMP, gameState.ovenTemp + TEMP_PER_TAP);
+    updateGauge();
+
+    const diff = Math.abs(gameState.ovenTemp - TARGET_TEMP);
+
+    if (diff <= PERFECT_RANGE) {
+        // 성공!
+        clearInterval(ovenDecayInterval);
+        document.getElementById('smashBtn').disabled = true;
+        document.getElementById('ovenFeedback').textContent = '🎊 완벽한 온도!';
+        showToast('완벽해요! 180°C 달성! 🔥');
+        setTimeout(showResult, 1500);
+    } else if (gameState.ovenTemp > TARGET_TEMP + PERFECT_RANGE) {
+        document.getElementById('ovenFeedback').textContent = '🌡️ 너무 뜨거워요! 잠깐 식혀요...';
+    } else {
+        document.getElementById('ovenFeedback').textContent = '🔥 계속 가열하세요!';
+    }
+}
+
+function updateGauge() {
+    const pct = (gameState.ovenTemp / MAX_TEMP) * 100;
+    document.getElementById('gaugeFill').style.width = pct + '%';
+    document.getElementById('ovenTemp').textContent =
+        `${Math.round(gameState.ovenTemp)}°C / 목표: ${TARGET_TEMP}°C`;
+
+    // 오븐 이모지 색 변화
+    const oven = document.getElementById('ovenDisplay');
+    const ratio = gameState.ovenTemp / MAX_TEMP;
+    oven.style.filter = `hue-rotate(${ratio * -60}deg) brightness(${1 + ratio * 0.4})`;
+}
+
+// ===================================================
+//  화면 4: 결과
+// ===================================================
+function showResult() {
+    clearInterval(gameState.timerInterval);
+    goToScreen(4);
+
+    const score = gameState.score;
+    let stars = '⭐⭐⭐';
+    let title = '완벽한 빵이야!! 🎉';
+    let sub   = '최고의 빵을 구웠어요!';
+
+    if (score < TOTAL_HITS) {
+        stars = '⭐⭐';
+        title = '꽤 괜찮은 빵이야! 😊';
+        sub   = '조금만 더 연습하면 완벽해요!';
+    }
+
+    document.getElementById('resultStars').textContent  = stars;
+    document.getElementById('resultTitle').textContent  = title;
+    document.getElementById('resultSubtitle').textContent = sub;
+
+    // 반짝이 효과
+    spawnSparkles();
+}
+
+function spawnSparkles() {
+    const screen = document.getElementById('screen-result');
+    const emojis = ['✨','⭐','🌟','💫'];
+    for (let i = 0; i < 14; i++) {
+        setTimeout(() => {
+            const sp = document.createElement('div');
+            sp.className = 'sparkle';
+            sp.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            sp.style.left = Math.random() * 90 + 5 + '%';
+            sp.style.top  = Math.random() * 70 + 15 + '%';
+            screen.appendChild(sp);
+            setTimeout(() => sp.remove(), 1000);
+        }, i * 120);
+    }
+}
+
+// ===================================================
+//  다시 하기
+// ===================================================
+function restartGame() {
+    gameState = {
+        screen: 1,
+        ingredients: { flour: false, salt: false, sugar: false, water: false, yeast: false },
+        score: 0,
+        ovenTemp: 0,
+        timerSec: 0,
+        timerInterval: null,
+    };
+
+    // 재료 초기화
+    ['flour','salt','sugar','water','yeast'].forEach(t => {
+        document.getElementById(`ing-${t}`).classList.remove('added');
+    });
+    ['r-flour','r-salt','r-sugar','r-water','r-yeast'].forEach(id => {
+        document.getElementById(id).classList.remove('done');
+    });
+    document.getElementById('nextBtn1').classList.remove('visible');
+    document.getElementById('timer1').textContent = '00:00';
+
+    goToScreen(1);
+    startTimer('timer1');
+}
+</script>
+</body>
+</html>
