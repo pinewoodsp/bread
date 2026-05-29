@@ -12,18 +12,19 @@
         }
 
         body {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background-image: url('bg.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Arial', sans-serif;
-        }
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-image: url('bg.png');
+    background-size: contain;        /* cover → contain 으로 변경! */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f5e6d3;       /* 남는 부분 베이지색으로! */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+}
 
         /* ===== 공통 화면 ===== */
         .screen {
