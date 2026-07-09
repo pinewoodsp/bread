@@ -6,7 +6,7 @@
     <title>나만의 귀여운 빵 만들기 게임</title>
     <style>
         body {
-            background-color: #faf5eb !important; /* 배경색 강제 적용 */
+            background-color: #faf5eb;
             font-family: 'Malgun Gothic', sans-serif;
             display: flex;
             justify-content: center;
@@ -33,14 +33,11 @@
         }
         .active { display: block; }
         
-        /* 공통 타이틀 */
         h1 { text-align: center; color: #4a3525; margin-top: 10px; font-size: 24px; }
         
-        /* 1단계: 재료 넣기 구조 개선 */
         .ingredients-grid { display: flex; gap: 20px; margin-top: 20px; height: 420px; }
         .ingredients-list { display: grid; grid-template-columns: repeat(2, 110px); gap: 15px; width: 240px; }
         
-        /* ⚠️ 이미지 짤림 방지를 위해 크기와 정렬방식 전면 수정 */
         .ingredient { 
             width: 100px; 
             height: 100px; 
@@ -56,7 +53,7 @@
             width: 100%; 
             height: 100%; 
             border-radius: 6px; 
-            object-fit: contain; /* 이미지가 찌그러지거나 잘리지 않게 조정 */
+            object-fit: contain;
             display: block;
         }
         .ingredient.checked { border-color: #2ecc71; }
@@ -81,7 +78,6 @@
         #note-img { position: absolute; right: 20px; top: 20px; width: 140px; object-fit: contain; }
         .next-btn { position: absolute; bottom: 30px; right: 30px; padding: 15px 30px; background: #e67e22; color: white; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; display: none; }
         
-        /* 2단계: 모양 선택 */
         .choice-container { display: flex; justify-content: center; gap: 50px; margin-top: 50px; }
         .choice-btn { padding: 25px 50px; font-size: 22px; color: white; border: none; border-radius: 15px; cursor: pointer; transition: transform 0.2s; }
         #btn-baguette { background: #d35400; }
@@ -90,13 +86,11 @@
         #kneading-img { display: block; margin: 20px auto; width: 180px; object-fit: contain; }
         #rolling-pin-img { display: block; margin: 0 auto; width: 120px; object-fit: contain; }
 
-        /* 3단계: 타이밍 게임 */
         #timing-track { width: 500px; height: 40px; background: #ddd; margin: 100px auto 20px; border-radius: 20px; position: relative; }
         #target-zone { height: 100%; background: #2ecc71; position: absolute; border-radius: 5px; }
         #timing-bar { width: 8px; height: 50px; background: #f1c40f; position: absolute; top: -5px; border-radius: 4px; }
         .game-info { text-align: center; font-size: 20px; color: #555; margin-top: 20px; }
 
-        /* 4단계: 오븐 연타 */
         #oven-area { text-align: center; margin-top: 30px; position: relative; height: 250px; }
         #oven-area img { width: 280px; display: none; margin: 0 auto; object-fit: contain; }
         #oven-area img.active-oven { display: block; }
@@ -108,7 +102,6 @@
         #heat-btn { display: block; margin: 0 auto; padding: 15px 40px; font-size: 20px; background: #e74c3c; color: white; border: none; border-radius: 10px; cursor: pointer; }
         #timer-display { text-align: center; font-size: 24px; color: red; font-weight: bold; }
 
-        /* 5단계: 결과창 */
         #result-area { text-align: center; margin-top: 50px; }
         #result-img { width: 300px; border-radius: 15px; object-fit: contain; }
         #result-text { font-size: 26px; font-weight: bold; margin: 20px 0; color: #2c3e50; }
@@ -120,20 +113,20 @@
 <div id="game-container">
     <div id="screen-ingredients" class="screen active">
         <h1>레시피대로 재료를 터치해 넣으세요!</h1>
-        <img id="note-img" src="note.jpg" alt="레시피 노트">
+        <img id="note-img" src="note.png" alt="레시피 노트">
         <div class="ingredients-grid">
             <div class="ingredients-list">
-                <div class="ingredient" onclick="clickIngredient('flour')"><img src="flour.jpg"></div>
+                <div class="ingredient" onclick="clickIngredient('flour')"><img src="flour.png"></div>
                 <div class="ingredient" onclick="clickIngredient('salt')"><img src="salt.png"></div>
-                <div class="ingredient" onclick="clickIngredient('sugar')"><img src="sugar.jpg"></div>
+                <div class="ingredient" onclick="clickIngredient('sugar')"><img src="sugar.png"></div>
                 <div class="ingredient" onclick="clickIngredient('yeast')"><img src="yeast.png"></div>
-                <div class="ingredient" onclick="clickIngredient('water')"><img src="water.jpg"></div>
+                <div class="ingredient" onclick="clickIngredient('water')"><img src="water.png"></div>
             </div>
             <div id="bowl-area">
-                <img src="bowl.jpg" alt="믹싱볼">
+                <img src="bowl.png" alt="믹싱볼">
             </div>
         </div>
-        <button class="next-btn" id="to-shape-btn" onclick="changeScreen('screen-choose-shape')">구우러 가기 -></button>
+        <button class="next-btn" id="to-shape-btn" onclick="changeScreen('screen-choose-shape')">구우러 가기 →</button>
     </div>
 
     <div id="screen-choose-shape" class="screen">
@@ -159,8 +152,8 @@
         <div id="timer-display">남은 시간: 5초</div>
         <h1>마우스 클릭이나 스페이스바를 연타하세요!</h1>
         <div id="oven-area">
-            <img id="oven-off" src="oven_off.jpg" class="active-oven">
-            <img id="oven-on" src="oven_on.jpg">
+            <img id="oven-off" src="oven_off.png" class="active-oven">
+            <img id="oven-on" src="oven_on.png">
         </div>
         <div id="gauge-container">
             <div id="gauge-bar"></div>
@@ -337,12 +330,12 @@
 
         if (selectedBread === 'baguette') {
             if (state === 1) { fileName = "baguette1.png"; message = "앗... 덜 익어서 딱딱해요 😭"; }
-            else if (state === 2) { fileName = "baguette2.jpg"; message = "겉바속촉 완벽한 황금빛 바게트 완성! ✨"; }
+            else if (state === 2) { fileName = "baguette2.png"; message = "겉바속촉 완벽한 황금빛 바게트 완성! ✨"; }
             else { fileName = "baguette3.png"; message = "새까맣게 타버린 숯댕이 바게트입니다... 🖤"; }
         } else {
-            if (state === 1) { fileName = "bread1.jpg"; message = "밀가루 맛이 그대로 나는 덜 구워진 식빵 😭"; }
-            else if (state === 2) { fileName = "bread2.jpg"; message = "폭신폭신 갓 구워진 최고의 우유식빵! ✨"; }
-            else { fileName = "bread3.jpg"; message = "형체를 알아볼 수 없이 타버린 식빵입니다 🖤"; }
+            if (state === 1) { fileName = "bread1.png"; message = "밀가루 맛이 그대로 나는 덜 구워진 식빵 😭"; }
+            else if (state === 2) { fileName = "bread2.png"; message = "폭신폭신 갓 구워진 최고의 우유식빵! ✨"; }
+            else { fileName = "bread3.png"; message = "형체를 알아볼 수 없이 타버린 식빵입니다 🖤"; }
         }
 
         resultImg.src = fileName;
