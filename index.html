@@ -47,15 +47,45 @@
             letter-spacing: 2px;
         }
 
-        /* ===== 재료들: 박스 없이 이미지만! ===== */
+        /* ===== 그릇: 먼저 배치, z-index 낮게 ===== */
+        #bowl-wrap {
+            position: absolute;
+            bottom: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2000px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;  /* 재료보다 아래 */
+        }
+        #bowl-img {
+            width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2));
+        }
+        #bowl-wrap.shake #bowl-img {
+            animation: bowlShake 0.5s ease;
+        }
+        @keyframes bowlShake {
+            0%   { transform: rotate(0deg) scale(1); }
+            20%  { transform: rotate(-5deg) scale(1.05); }
+            40%  { transform: rotate(5deg) scale(1.05); }
+            60%  { transform: rotate(-3deg) scale(1.02); }
+            80%  { transform: rotate(2deg) scale(1.01); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        /* ===== 재료들: z-index 높게, 그릇 위에! ===== */
         .ingredients-list {
             position: absolute;
-            top: 47%;
+            top: 42%;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 40px;
+            gap: 55px;
             align-items: flex-end;
+            z-index: 10;  /* 그릇보다 위! */
         }
 
         .ingredient {
@@ -64,70 +94,41 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: transform 0.15s;
-            /* 박스 없음! */
             background: none;
             border: none;
+            transition: transform 0.15s;
+            z-index: 10;
         }
-        .ingredient:hover { transform: scale(1.1) translateY(-8px); }
-        .ingredient:active { transform: scale(0.92); }
+        .ingredient:hover { transform: scale(1.1) translateY(-10px); }
+        .ingredient:active { transform: scale(0.93); }
         .ingredient.used {
-            opacity: 0.25;
+            opacity: 0.2;
             pointer-events: none;
-            filter: grayscale(0.7);
+            filter: grayscale(0.8);
         }
         .ingredient img {
-            width: 150px;
-            height: 150px;
+            width: 220px;
+            height: 220px;
             object-fit: contain;
-            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
         }
         .ing-label {
-            font-size: 15px;
+            font-size: 20px;
             color: #5d4037;
             font-weight: bold;
             margin-top: 6px;
-            text-shadow: 0 1px 3px rgba(255,255,255,0.8);
+            text-shadow: 0 2px 6px rgba(255,255,255,0.9);
         }
 
-        /* ===== 그릇: 엄청 크게! ===== */
-        #bowl-wrap {
-            position: absolute;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 500px;
-            height: 380px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #bowl-img {
-            width: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 14px 24px rgba(0,0,0,0.2));
-        }
-        #bowl-wrap.shake #bowl-img {
-            animation: bowlShake 0.5s ease;
-        }
-        @keyframes bowlShake {
-            0%   { transform: rotate(0deg) scale(1); }
-            20%  { transform: rotate(-6deg) scale(1.07); }
-            40%  { transform: rotate(6deg) scale(1.07); }
-            60%  { transform: rotate(-3deg) scale(1.03); }
-            80%  { transform: rotate(2deg) scale(1.01); }
-            100% { transform: rotate(0deg) scale(1); }
-        }
-
-        /* ===== 날아가는 재료 아이콘 ===== */
+        /* ===== 날아가는 아이콘 ===== */
         .pour-icon {
             position: fixed;
             pointer-events: none;
             z-index: 9998;
-            width: 130px;
-            height: 130px;
+            width: 180px;
+            height: 180px;
             object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
         }
 
         /* ===== 파티클 ===== */
@@ -159,6 +160,7 @@
             display: none;
             box-shadow: 0 4px 16px rgba(230,126,34,0.45);
             transition: transform 0.15s;
+            z-index: 100;
         }
         #to-shape-btn.show { display: block; animation: popIn 0.4s ease; }
         #to-shape-btn:hover { transform: scale(1.06); }
@@ -183,6 +185,7 @@
             gap: 22px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             border: 2px solid rgba(222,184,135,0.5);
+            z-index: 50;
         }
         .panel h2 { font-size: 22px; color: #4a3525; }
 
@@ -257,7 +260,7 @@
             font-family: 'Malgun Gothic', sans-serif;
             background: linear-gradient(135deg, #95a5a6, #7f8c8d);
             color: white; border: none; border-radius: 10px;
-            cursor: pointer; transition: transform 0.15s;
+            cursor: pointer; transition: transform 0.15px;
         }
         #restart-btn:hover { transform: scale(1.05); }
 
@@ -292,7 +295,12 @@
     <div id="screen-ingredients" class="screen active">
         <div id="timer-box">00:00</div>
 
-        <!-- 재료: 박스 없이 이미지만! -->
+        <!-- 그릇: z-index 1 (재료 아래) -->
+        <div id="bowl-wrap">
+            <img id="bowl-img" src="bowl.png" alt="믹싱볼">
+        </div>
+
+        <!-- 재료: z-index 10 (그릇 위!) -->
         <div class="ingredients-list">
             <div class="ingredient" id="ing-flour" onclick="clickIngredient('flour', event)">
                 <img src="flour.png" alt="밀가루">
@@ -314,11 +322,6 @@
                 <img src="water.png" alt="물">
                 <div class="ing-label">물</div>
             </div>
-        </div>
-
-        <!-- 그릇: 엄청 크게! -->
-        <div id="bowl-wrap">
-            <img id="bowl-img" src="bowl.png" alt="믹싱볼">
         </div>
 
         <button id="to-shape-btn" onclick="changeScreen('screen-choose-shape')">
@@ -424,7 +427,6 @@
 
     startTimer();
 
-    // ===== 화면 1 =====
     function clickIngredient(name, event) {
         if (ingredientsStatus[name] || isPouring) return;
         isPouring = true;
@@ -436,32 +438,29 @@
 
         const bowlRect = document.getElementById('bowl-img').getBoundingClientRect();
         const bowlCX   = bowlRect.left + bowlRect.width  / 2;
-        const bowlCY   = bowlRect.top  + bowlRect.height * 0.3;
+        const bowlCY   = bowlRect.top  + bowlRect.height * 0.25;
 
         const ingRect = ingEl.getBoundingClientRect();
         const ingCX   = ingRect.left + ingRect.width  / 2;
         const ingCY   = ingRect.top  + ingRect.height / 2;
 
-        // 날아가는 아이콘
         const icon = document.createElement('img');
         icon.src = ingImg.src;
         icon.className = 'pour-icon';
         icon.style.cssText = `
-            left: ${ingCX - 65}px;
-            top:  ${ingCY - 65}px;
+            left: ${ingCX - 90}px;
+            top:  ${ingCY - 90}px;
             transition: left 0.5s cubic-bezier(0.4,0,0.2,1),
                         top  0.5s cubic-bezier(0.4,0,0.2,1),
                         transform 0.5s ease;
         `;
         document.body.appendChild(icon);
 
-        // 그릇 위로 이동
         setTimeout(() => {
-            icon.style.left = (bowlCX - 65) + 'px';
-            icon.style.top  = (bowlCY - 80) + 'px';
+            icon.style.left = (bowlCX - 90) + 'px';
+            icon.style.top  = (bowlCY - 90) + 'px';
         }, 20);
 
-        // 기울이기 + 파티클
         setTimeout(() => {
             icon.style.transition = 'transform 0.4s ease';
             icon.style.transform  = 'rotate(-120deg)';
@@ -494,11 +493,11 @@
 
     function spawnParticles(name, cx, cy) {
         const configs = {
-            flour: { cls:'flour-p', count:30, minSize:12, maxSize:22 },
-            salt:  { cls:'salt-p',  count:28, minSize:5,  maxSize:10 },
-            sugar: { cls:'sugar-p', count:24, minSize:6,  maxSize:11 },
-            yeast: { cls:'yeast-p', count:20, minSize:8,  maxSize:14 },
-            water: { cls:'water-p', count:18, minSize:8,  maxSize:16 },
+            flour: { cls:'flour-p', count:35, minSize:14, maxSize:26 },
+            salt:  { cls:'salt-p',  count:32, minSize:6,  maxSize:12 },
+            sugar: { cls:'sugar-p', count:28, minSize:7,  maxSize:13 },
+            yeast: { cls:'yeast-p', count:24, minSize:9,  maxSize:16 },
+            water: { cls:'water-p', count:22, minSize:9,  maxSize:18 },
         };
         const cfg = configs[name];
 
@@ -510,13 +509,13 @@
                 p.style.width  = size + 'px';
                 p.style.height = name === 'water' ? (size * 1.4) + 'px' : size + 'px';
 
-                const sx = cx + (Math.random() - 0.5) * 50;
+                const sx = cx + (Math.random() - 0.5) * 60;
                 const sy = cy;
                 p.style.left = sx + 'px';
                 p.style.top  = sy + 'px';
 
                 const angle = (Math.random() * 140 + 20) * Math.PI / 180;
-                const dist  = 50 + Math.random() * 100;
+                const dist  = 60 + Math.random() * 120;
                 const tx    = Math.cos(angle) * dist * (Math.random() > 0.5 ? 1 : -1);
                 const ty    = Math.sin(angle) * dist;
                 const dur   = 0.5 + Math.random() * 0.6;
@@ -533,17 +532,15 @@
                 });
 
                 setTimeout(() => p.remove(), (dur + 0.1) * 1000);
-            }, i * 22);
+            }, i * 20);
         }
     }
 
-    // ===== 화면 2 =====
     function chooseShape(type) {
         selectedBread = type;
         changeScreen('screen-timing');
     }
 
-    // ===== 화면 3 =====
     function startTimingGame() {
         timingAttempts = 3; timingSuccesses = 0;
         barPosition = 0; barDirection = 1;
@@ -585,7 +582,6 @@
         }
     }
 
-    // ===== 화면 4 =====
     function startOvenGame() {
         isOvenActive = true; ovenTimeLeft = 50;
         updateOvenUI();
@@ -631,7 +627,6 @@
         showResult(ovenGauge < 40 ? 1 : ovenGauge > 75 ? 3 : 2);
     }
 
-    // ===== 화면 5 =====
     function showResult(state) {
         changeScreen('screen-result');
         const msgs = {
@@ -662,7 +657,6 @@
         }
     }
 
-    // ===== 리셋 =====
     function resetGame() {
         ingredientsStatus = { flour:false, salt:false, sugar:false, yeast:false, water:false };
         selectedBread = ''; ovenGauge = 30; isPouring = false;
