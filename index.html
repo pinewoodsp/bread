@@ -47,59 +47,57 @@
             letter-spacing: 2px;
         }
 
-        /* ===== 재료들 ===== */
+        /* ===== 재료들: 박스 없이 이미지만! ===== */
         .ingredients-list {
             position: absolute;
-            top: 53%;
+            top: 47%;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 32px;
-            align-items: center;
+            gap: 40px;
+            align-items: flex-end;
         }
 
         .ingredient {
-            width: 85px;
-            height: 85px;
             cursor: pointer;
-            border-radius: 16px;
             position: relative;
-            background-color: rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-            border: 2px solid rgba(255,255,255,0.6);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             transition: transform 0.15s;
+            /* 박스 없음! */
+            background: none;
+            border: none;
         }
-        .ingredient:hover { transform: scale(1.1) translateY(-5px); }
+        .ingredient:hover { transform: scale(1.1) translateY(-8px); }
         .ingredient:active { transform: scale(0.92); }
         .ingredient.used {
-            opacity: 0.35;
+            opacity: 0.25;
             pointer-events: none;
-            filter: grayscale(0.5);
+            filter: grayscale(0.7);
         }
         .ingredient img {
-            width: 72%;
-            height: 72%;
+            width: 150px;
+            height: 150px;
             object-fit: contain;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
         }
         .ing-label {
-            font-size: 11px;
+            font-size: 15px;
             color: #5d4037;
             font-weight: bold;
-            margin-top: 3px;
+            margin-top: 6px;
+            text-shadow: 0 1px 3px rgba(255,255,255,0.8);
         }
 
-        /* ===== 그릇 ===== */
+        /* ===== 그릇: 엄청 크게! ===== */
         #bowl-wrap {
             position: absolute;
-            bottom: 20%;
+            bottom: 10%;
             left: 50%;
             transform: translateX(-50%);
-            width: 300px;
-            height: 220px;
+            width: 500px;
+            height: 380px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -107,7 +105,7 @@
         #bowl-img {
             width: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 8px 14px rgba(0,0,0,0.18));
+            filter: drop-shadow(0 14px 24px rgba(0,0,0,0.2));
         }
         #bowl-wrap.shake #bowl-img {
             animation: bowlShake 0.5s ease;
@@ -121,14 +119,15 @@
             100% { transform: rotate(0deg) scale(1); }
         }
 
-        /* ===== 재료가 그릇 위로 날아가서 기울어지는 애니메이션 ===== */
+        /* ===== 날아가는 재료 아이콘 ===== */
         .pour-icon {
             position: fixed;
             pointer-events: none;
             z-index: 9998;
-            width: 80px;
-            height: 80px;
+            width: 130px;
+            height: 130px;
             object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
         }
 
         /* ===== 파티클 ===== */
@@ -138,36 +137,11 @@
             z-index: 9999;
             border-radius: 50%;
         }
-
-        /* 소금: 흰 결정 */
-        .salt-p {
-            width: 5px; height: 5px;
-            background: white;
-            border-radius: 2px;
-            box-shadow: 0 0 3px rgba(200,200,200,0.8);
-        }
-        /* 밀가루: 뿌연 흰 덩이 */
-        .flour-p {
-            background: #f5f0e8;
-            border-radius: 50%;
-            opacity: 0.85;
-        }
-        /* 설탕: 분홍 반짝이 */
-        .sugar-p {
-            width: 6px; height: 6px;
-            background: #ffd6e7;
-            box-shadow: 0 0 4px rgba(255,182,193,0.7);
-        }
-        /* 물: 파란 물방울 */
-        .water-p {
-            background: rgba(100,180,255,0.8);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        }
-        /* 이스트: 노란 버블 */
-        .yeast-p {
-            background: #f9e4b7;
-            border: 1px solid #e0c070;
-        }
+        .salt-p  { background: white; border-radius: 2px; box-shadow: 0 0 4px rgba(200,200,200,0.9); }
+        .flour-p { background: #f5f0e8; border-radius: 50%; opacity: 0.9; }
+        .sugar-p { background: #ffd6e7; box-shadow: 0 0 5px rgba(255,182,193,0.8); }
+        .water-p { background: rgba(100,180,255,0.85); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+        .yeast-p { background: #f9e4b7; border: 1px solid #e0c070; }
 
         /* ===== 구우러 가기 버튼 ===== */
         #to-shape-btn {
@@ -186,10 +160,7 @@
             box-shadow: 0 4px 16px rgba(230,126,34,0.45);
             transition: transform 0.15s;
         }
-        #to-shape-btn.show {
-            display: block;
-            animation: popIn 0.4s ease;
-        }
+        #to-shape-btn.show { display: block; animation: popIn 0.4s ease; }
         #to-shape-btn:hover { transform: scale(1.06); }
         @keyframes popIn {
             0%   { transform: scale(0.5); opacity: 0; }
@@ -215,66 +186,48 @@
         }
         .panel h2 { font-size: 22px; color: #4a3525; }
 
-        /* ===== 화면 2: 모양 선택 ===== */
+        /* ===== 화면 2 ===== */
         #kneading-img { width: 160px; object-fit: contain; }
         .choice-container { display: flex; gap: 40px; }
         .choice-btn {
-            padding: 20px 44px;
-            font-size: 20px;
+            padding: 20px 44px; font-size: 20px;
             font-family: 'Malgun Gothic', sans-serif;
-            color: white; border: none;
-            border-radius: 14px; cursor: pointer;
-            transition: transform 0.15s;
+            color: white; border: none; border-radius: 14px;
+            cursor: pointer; transition: transform 0.15s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         #btn-baguette { background: linear-gradient(135deg, #e67e22, #d35400); }
         #btn-bread    { background: linear-gradient(135deg, #c8956c, #8B5E3C); }
         .choice-btn:hover { transform: scale(1.07); }
 
-        /* ===== 화면 3: 타이밍 ===== */
+        /* ===== 화면 3 ===== */
         #rolling-pin-img { width: 130px; object-fit: contain; }
         #timing-track {
             width: 500px; height: 42px;
             background: #e0e0e0; border-radius: 21px;
             position: relative; overflow: hidden;
         }
-        #target-zone {
-            height: 100%; background: #2ecc71;
-            position: absolute; border-radius: 6px;
-        }
+        #target-zone { height: 100%; background: #2ecc71; position: absolute; border-radius: 6px; }
         #timing-bar {
-            width: 10px; height: 54px;
-            background: #f1c40f;
-            position: absolute; top: -6px;
-            border-radius: 5px;
+            width: 10px; height: 54px; background: #f1c40f;
+            position: absolute; top: -6px; border-radius: 5px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
         .game-info { font-size: 18px; color: #555; font-weight: bold; }
         .tap-hint  { font-size: 13px; color: #aaa; }
 
-        /* ===== 화면 4: 오븐 ===== */
+        /* ===== 화면 4 ===== */
         #timer-display { font-size: 22px; color: #e74c3c; font-weight: bold; }
-        #oven-area {
-            width: 260px; height: 190px;
-            position: relative;
-        }
-        #oven-area img {
-            width: 100%; height: 100%;
-            object-fit: contain;
-            position: absolute; display: none;
-        }
+        #oven-area { width: 260px; height: 190px; position: relative; }
+        #oven-area img { width: 100%; height: 100%; object-fit: contain; position: absolute; display: none; }
         #oven-area img.active-oven { display: block; }
         #gauge-container {
-            width: 500px; height: 30px;
-            background: #e0e0e0; border-radius: 15px;
-            position: relative; overflow: hidden;
-            border: 2px solid #bbb;
+            width: 500px; height: 30px; background: #e0e0e0;
+            border-radius: 15px; position: relative; overflow: hidden; border: 2px solid #bbb;
         }
         #gauge-bar {
-            height: 100%; width: 30%;
-            background: #3498db;
-            transition: width 0.1s ease, background-color 0.3s;
-            border-radius: 15px;
+            height: 100%; width: 30%; background: #3498db;
+            transition: width 0.1s ease, background-color 0.3s; border-radius: 15px;
         }
         .guide-lines { position: absolute; width: 100%; height: 100%; top: 0; pointer-events: none; }
         .line-40 { position: absolute; left: 40%; width: 3px; height: 100%; background: rgba(0,0,0,0.35); }
@@ -284,17 +237,14 @@
             padding: 13px 42px; font-size: 18px;
             font-family: 'Malgun Gothic', sans-serif;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white; border: none; border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(192,57,43,0.35);
-            transition: transform 0.08s;
+            color: white; border: none; border-radius: 12px; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(192,57,43,0.35); transition: transform 0.08s;
         }
         #heat-btn:active { transform: scale(0.93); }
 
-        /* ===== 화면 5: 결과 ===== */
+        /* ===== 화면 5 ===== */
         #result-img {
-            width: 220px; object-fit: contain;
-            border-radius: 14px;
+            width: 220px; object-fit: contain; border-radius: 14px;
             animation: breadFloat 2s ease-in-out infinite;
         }
         @keyframes breadFloat {
@@ -311,12 +261,9 @@
         }
         #restart-btn:hover { transform: scale(1.05); }
 
-        /* 반짝이 */
         .sparkle {
-            position: fixed; pointer-events: none;
-            font-size: 1.5rem;
-            animation: sparklePop 1s ease-out forwards;
-            z-index: 9999;
+            position: fixed; pointer-events: none; font-size: 1.5rem;
+            animation: sparklePop 1s ease-out forwards; z-index: 9999;
         }
         @keyframes sparklePop {
             0%   { opacity: 1; transform: scale(0) translateY(0); }
@@ -324,15 +271,13 @@
             100% { opacity: 0; transform: scale(0.5) translateY(-70px); }
         }
 
-        /* 토스트 */
         .toast {
             position: fixed; bottom: 36px; left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.72); color: white;
             padding: 10px 26px; border-radius: 20px;
             font-size: 0.95rem; opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none; z-index: 99999;
+            transition: opacity 0.3s; pointer-events: none; z-index: 99999;
         }
         .toast.show { opacity: 1; }
     </style>
@@ -347,6 +292,7 @@
     <div id="screen-ingredients" class="screen active">
         <div id="timer-box">00:00</div>
 
+        <!-- 재료: 박스 없이 이미지만! -->
         <div class="ingredients-list">
             <div class="ingredient" id="ing-flour" onclick="clickIngredient('flour', event)">
                 <img src="flour.png" alt="밀가루">
@@ -370,6 +316,7 @@
             </div>
         </div>
 
+        <!-- 그릇: 엄청 크게! -->
         <div id="bowl-wrap">
             <img id="bowl-img" src="bowl.png" alt="믹싱볼">
         </div>
@@ -379,7 +326,7 @@
         </button>
     </div>
 
-    <!-- ===== 화면 2: 모양 선택 ===== -->
+    <!-- ===== 화면 2 ===== -->
     <div id="screen-choose-shape" class="screen">
         <div class="panel">
             <h2>어떤 모양의 빵을 만드시겠습니까?</h2>
@@ -391,7 +338,7 @@
         </div>
     </div>
 
-    <!-- ===== 화면 3: 타이밍 ===== -->
+    <!-- ===== 화면 3 ===== -->
     <div id="screen-timing" class="screen">
         <div class="panel" onclick="triggerTiming()">
             <h2>밀대로 반죽 밀기!</h2>
@@ -405,7 +352,7 @@
         </div>
     </div>
 
-    <!-- ===== 화면 4: 오븐 ===== -->
+    <!-- ===== 화면 4 ===== -->
     <div id="screen-oven" class="screen">
         <div class="panel">
             <div id="timer-display">남은 시간: 5.0초</div>
@@ -426,7 +373,7 @@
         </div>
     </div>
 
-    <!-- ===== 화면 5: 결과 ===== -->
+    <!-- ===== 화면 5 ===== -->
     <div id="screen-result" class="screen">
         <div class="panel">
             <h2>🍞 베이킹 결과!</h2>
@@ -448,9 +395,8 @@
     let ovenGauge = 30, ovenTimeLeft = 50;
     let ovenInterval, isOvenActive = false;
     let timerSec = 0, timerInterval;
-    let isPouring = false; // 붓는 중에 중복 클릭 방지
+    let isPouring = false;
 
-    // ===== 타이머 =====
     function startTimer() {
         clearInterval(timerInterval);
         timerSec = 0;
@@ -462,7 +408,6 @@
         }, 1000);
     }
 
-    // ===== 토스트 =====
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.textContent = msg;
@@ -470,7 +415,6 @@
         setTimeout(() => t.classList.remove('show'), 1500);
     }
 
-    // ===== 화면 전환 =====
     function changeScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -480,7 +424,7 @@
 
     startTimer();
 
-    // ===== 화면 1: 재료 클릭 =====
+    // ===== 화면 1 =====
     function clickIngredient(name, event) {
         if (ingredientsStatus[name] || isPouring) return;
         isPouring = true;
@@ -488,87 +432,73 @@
 
         const ingEl  = document.getElementById('ing-' + name);
         const ingImg = ingEl.querySelector('img');
-
-        // 재료 흐리게
         ingEl.classList.add('used');
 
-        // 그릇 위치 계산
         const bowlRect = document.getElementById('bowl-img').getBoundingClientRect();
         const bowlCX   = bowlRect.left + bowlRect.width  / 2;
-        const bowlCY   = bowlRect.top  + bowlRect.height * 0.35;
+        const bowlCY   = bowlRect.top  + bowlRect.height * 0.3;
 
-        // 재료 위치
         const ingRect = ingEl.getBoundingClientRect();
         const ingCX   = ingRect.left + ingRect.width  / 2;
         const ingCY   = ingRect.top  + ingRect.height / 2;
 
-        // 날아가는 아이콘 생성
+        // 날아가는 아이콘
         const icon = document.createElement('img');
-        icon.src       = ingImg.src;
+        icon.src = ingImg.src;
         icon.className = 'pour-icon';
         icon.style.cssText = `
-            left: ${ingCX - 40}px;
-            top:  ${ingCY - 40}px;
-            transition: left 0.45s cubic-bezier(0.4,0,0.2,1),
-                        top  0.45s cubic-bezier(0.4,0,0.2,1),
-                        transform 0.45s ease;
+            left: ${ingCX - 65}px;
+            top:  ${ingCY - 65}px;
+            transition: left 0.5s cubic-bezier(0.4,0,0.2,1),
+                        top  0.5s cubic-bezier(0.4,0,0.2,1),
+                        transform 0.5s ease;
         `;
         document.body.appendChild(icon);
 
         // 그릇 위로 이동
-        requestAnimationFrame(() => {
-            setTimeout(() => {
-                icon.style.left = (bowlCX - 40) + 'px';
-                icon.style.top  = (bowlCY - 60) + 'px';
-            }, 20);
-        });
-
-        // 그릇 위 도착 후 기울이기
         setTimeout(() => {
-            icon.style.transition = 'transform 0.35s ease';
-            icon.style.transform  = 'rotate(-110deg)';
+            icon.style.left = (bowlCX - 65) + 'px';
+            icon.style.top  = (bowlCY - 80) + 'px';
+        }, 20);
 
-            // 파티클 쏟아지기
+        // 기울이기 + 파티클
+        setTimeout(() => {
+            icon.style.transition = 'transform 0.4s ease';
+            icon.style.transform  = 'rotate(-120deg)';
             spawnParticles(name, bowlCX, bowlCY);
 
-            // 그릇 흔들기
             const bowl = document.getElementById('bowl-wrap');
             bowl.classList.remove('shake');
             void bowl.offsetWidth;
             bowl.classList.add('shake');
             setTimeout(() => bowl.classList.remove('shake'), 500);
+        }, 530);
 
-        }, 480);
-
-        // 아이콘 제거 + 다음 허용
         setTimeout(() => {
             icon.remove();
             isPouring = false;
-
-            const toastMsgs = {
+            const msgs = {
                 flour: '밀가루 슉~ 🌾',
                 salt:  '소금 챱챱! 🧂',
                 sugar: '설탕 솔솔~ 🍬',
                 yeast: '이스트 추가! 🫧',
                 water: '물 졸졸~ 💧'
             };
-            showToast(toastMsgs[name]);
-
+            showToast(msgs[name]);
             if (Object.values(ingredientsStatus).every(v => v)) {
                 document.getElementById('to-shape-btn').classList.add('show');
                 setTimeout(() => showToast('재료 준비 완료! 🎉'), 400);
             }
-        }, 900);
+        }, 1050);
     }
 
-    // ===== 파티클 =====
     function spawnParticles(name, cx, cy) {
         const configs = {
-            flour: { cls:'flour-p', count:22, minSize:8,  maxSize:16 },
-            salt:  { cls:'salt-p',  count:20, minSize:4,  maxSize:7  },
-            sugar: { cls:'sugar-p', count:18, minSize:5,  maxSize:8  },
-            yeast: { cls:'yeast-p', count:16, minSize:6,  maxSize:10 },
-            water: { cls:'water-p', count:14, minSize:6,  maxSize:12 },
+            flour: { cls:'flour-p', count:30, minSize:12, maxSize:22 },
+            salt:  { cls:'salt-p',  count:28, minSize:5,  maxSize:10 },
+            sugar: { cls:'sugar-p', count:24, minSize:6,  maxSize:11 },
+            yeast: { cls:'yeast-p', count:20, minSize:8,  maxSize:14 },
+            water: { cls:'water-p', count:18, minSize:8,  maxSize:16 },
         };
         const cfg = configs[name];
 
@@ -578,25 +508,21 @@
                 const size = cfg.minSize + Math.random() * (cfg.maxSize - cfg.minSize);
                 p.className = 'particle ' + cfg.cls;
                 p.style.width  = size + 'px';
-                p.style.height = name === 'water'
-                    ? (size * 1.4) + 'px'
-                    : size + 'px';
+                p.style.height = name === 'water' ? (size * 1.4) + 'px' : size + 'px';
 
-                // 시작 위치: 그릇 위
-                const sx = cx + (Math.random() - 0.5) * 30;
-                const sy = cy - 10;
+                const sx = cx + (Math.random() - 0.5) * 50;
+                const sy = cy;
                 p.style.left = sx + 'px';
                 p.style.top  = sy + 'px';
 
-                // 퍼져 나가는 방향 (아래쪽으로 집중)
-                const angle = (Math.random() * 140 + 20) * Math.PI / 180; // 20~160도
-                const dist  = 30 + Math.random() * 60;
+                const angle = (Math.random() * 140 + 20) * Math.PI / 180;
+                const dist  = 50 + Math.random() * 100;
                 const tx    = Math.cos(angle) * dist * (Math.random() > 0.5 ? 1 : -1);
                 const ty    = Math.sin(angle) * dist;
-                const dur   = 0.5 + Math.random() * 0.5;
+                const dur   = 0.5 + Math.random() * 0.6;
 
                 p.style.transition = `transform ${dur}s ease-out, opacity ${dur}s ease-out`;
-                p.style.opacity    = '1';
+                p.style.opacity = '1';
                 document.body.appendChild(p);
 
                 requestAnimationFrame(() => {
@@ -607,7 +533,7 @@
                 });
 
                 setTimeout(() => p.remove(), (dur + 0.1) * 1000);
-            }, i * 25);
+            }, i * 22);
         }
     }
 
