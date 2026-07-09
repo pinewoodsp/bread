@@ -34,7 +34,7 @@
         }
         .screen.active { display: block; }
 
-        /* ===== 타이머 ===== */
+        /* ===== 타이머 (전체 화면 적용으로 z-index 추가) ===== */
         #timer-box {
             position: absolute;
             top: 3.5%;
@@ -45,20 +45,21 @@
             font-weight: bold;
             color: #5d4037;
             letter-spacing: 2px;
+            z-index: 999;
         }
 
-        /* ===== 그릇: 먼저 배치, z-index 낮게 ===== */
-      #bowl-wrap {
-    position: absolute;
-    bottom: -5%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 700px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-}
+        /* ===== 그릇 ===== */
+        #bowl-wrap {
+            position: absolute;
+            bottom: -5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
         #bowl-img {
             width: 100%;
             object-fit: contain;
@@ -76,7 +77,7 @@
             100% { transform: rotate(0deg) scale(1); }
         }
 
-        /* ===== 재료들: z-index 높게, 그릇 위에! ===== */
+        /* ===== 재료들 ===== */
         .ingredients-list {
             position: absolute;
             top: 42%;
@@ -85,7 +86,7 @@
             display: flex;
             gap: 55px;
             align-items: flex-end;
-            z-index: 10;  /* 그릇보다 위! */
+            z-index: 10; 
         }
 
         .ingredient {
@@ -120,7 +121,7 @@
             text-shadow: 0 2px 6px rgba(255,255,255,0.9);
         }
 
-        /* ===== 날아가는 아이콘 ===== */
+        /* ===== 날아가는 아이콘 & 파티클 ===== */
         .pour-icon {
             position: fixed;
             pointer-events: none;
@@ -131,7 +132,6 @@
             filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
         }
 
-        /* ===== 파티클 ===== */
         .particle {
             position: fixed;
             pointer-events: none;
@@ -144,7 +144,7 @@
         .water-p { background: rgba(100,180,255,0.85); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
         .yeast-p { background: #f9e4b7; border: 1px solid #e0c070; }
 
-        /* ===== 구우러 가기 버튼 ===== */
+        /* ===== 구우러 가기 버튼 (수정됨: 항상 보이게 변경) ===== */
         #to-shape-btn {
             position: absolute;
             bottom: 3%;
@@ -157,18 +157,12 @@
             font-size: 18px;
             font-family: 'Malgun Gothic', sans-serif;
             cursor: pointer;
-            display: none;
+            display: block; /* 항상 보이게 변경 */
             box-shadow: 0 4px 16px rgba(230,126,34,0.45);
             transition: transform 0.15s;
             z-index: 100;
         }
-        #to-shape-btn.show { display: block; animation: popIn 0.4s ease; }
         #to-shape-btn:hover { transform: scale(1.06); }
-        @keyframes popIn {
-            0%   { transform: scale(0.5); opacity: 0; }
-            70%  { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
 
         /* ===== 공통 패널 ===== */
         .panel {
@@ -255,6 +249,10 @@
             50%      { transform: translateY(-10px); }
         }
         #result-text { font-size: 22px; font-weight: bold; color: #2c3e50; text-align: center; }
+        
+        /* 점수 텍스트 추가 */
+        #final-score { font-size: 24px; font-weight: bold; color: #d35400; margin-top: 5px; }
+        
         #restart-btn {
             padding: 12px 32px; font-size: 17px;
             font-family: 'Malgun Gothic', sans-serif;
@@ -290,17 +288,14 @@
 <div class="toast" id="toast"></div>
 
 <div id="game-container">
+    
+    <div id="timer-box">00:00</div>
 
-    <!-- ===== 화면 1: 재료 ===== -->
     <div id="screen-ingredients" class="screen active">
-        <div id="timer-box">00:00</div>
-
-        <!-- 그릇: z-index 1 (재료 아래) -->
         <div id="bowl-wrap">
             <img id="bowl-img" src="bowl.png" alt="믹싱볼">
         </div>
 
-        <!-- 재료: z-index 10 (그릇 위!) -->
         <div class="ingredients-list">
             <div class="ingredient" id="ing-flour" onclick="clickIngredient('flour', event)">
                 <img src="flour.png" alt="밀가루">
@@ -324,12 +319,11 @@
             </div>
         </div>
 
-        <button id="to-shape-btn" onclick="changeScreen('screen-choose-shape')">
+        <button id="to-shape-btn" onclick="goToShape()">
             구우러 가기 →
         </button>
     </div>
 
-    <!-- ===== 화면 2 ===== -->
     <div id="screen-choose-shape" class="screen">
         <div class="panel">
             <h2>어떤 모양의 빵을 만드시겠습니까?</h2>
@@ -341,7 +335,6 @@
         </div>
     </div>
 
-    <!-- ===== 화면 3 ===== -->
     <div id="screen-timing" class="screen">
         <div class="panel" onclick="triggerTiming()">
             <h2>밀대로 반죽 밀기!</h2>
@@ -355,7 +348,6 @@
         </div>
     </div>
 
-    <!-- ===== 화면 4 ===== -->
     <div id="screen-oven" class="screen">
         <div class="panel">
             <div id="timer-display">남은 시간: 5.0초</div>
@@ -376,13 +368,12 @@
         </div>
     </div>
 
-    <!-- ===== 화면 5 ===== -->
     <div id="screen-result" class="screen">
         <div class="panel">
             <h2>🍞 베이킹 결과!</h2>
             <img id="result-img" src="" alt="결과 빵">
             <div id="result-text"></div>
-            <button id="restart-btn" onclick="resetGame()">🔄 다시 만들기</button>
+            <div id="final-score"></div> <button id="restart-btn" onclick="resetGame()">🔄 다시 만들기</button>
         </div>
     </div>
 
@@ -399,10 +390,13 @@
     let ovenInterval, isOvenActive = false;
     let timerSec = 0, timerInterval;
     let isPouring = false;
+    
+    let totalScore = 100; // 게임 점수 변수 추가
 
     function startTimer() {
         clearInterval(timerInterval);
         timerSec = 0;
+        document.getElementById('timer-box').textContent = '00:00'; // 시작하자마자 0초로 즉시 갱신
         timerInterval = setInterval(() => {
             timerSec++;
             const m = String(Math.floor(timerSec/60)).padStart(2,'0');
@@ -484,11 +478,25 @@
                 water: '물 졸졸~ 💧'
             };
             showToast(msgs[name]);
+            
             if (Object.values(ingredientsStatus).every(v => v)) {
-                document.getElementById('to-shape-btn').classList.add('show');
                 setTimeout(() => showToast('재료 준비 완료! 🎉'), 400);
             }
         }, 1050);
+    }
+
+    // 재료 안 넣었을 때 점수 깎이는 로직 추가
+    function goToShape() {
+        let missedCount = 0;
+        for(let key in ingredientsStatus) {
+            if(!ingredientsStatus[key]) missedCount++;
+        }
+        
+        if(missedCount > 0) {
+            totalScore -= (missedCount * 10);
+            showToast(`재료 ${missedCount}개 누락! 점수 하락 😢`);
+        }
+        changeScreen('screen-choose-shape');
     }
 
     function spawnParticles(name, cx, cy) {
@@ -570,7 +578,8 @@
             timingSuccesses++;
             showToast('성공! 👏');
         } else {
-            showToast('아깝다! 다시!');
+            totalScore -= 10; // 실패시 점수 깎임
+            showToast('아깝다! 점수 깎임 😭');
         }
         timingAttempts--;
         updateTimingUI();
@@ -589,7 +598,8 @@
         clearInterval(ovenInterval);
         ovenInterval = setInterval(() => {
             ovenTimeLeft--;
-            if (ovenGauge > 0) ovenGauge -= 0.6;
+            // 오븐 난이도 상승 (기존 0.6에서 1.5로 더 빠르게 줄어들게 변경)
+            if (ovenGauge > 0) ovenGauge -= 1.5; 
             updateOvenUI();
             if (ovenTimeLeft <= 0) endOvenGame();
         }, 100);
@@ -624,7 +634,15 @@
         isOvenActive = false;
         clearInterval(ovenInterval);
         window.removeEventListener('keydown', handleSpaceKey);
-        showResult(ovenGauge < 40 ? 1 : ovenGauge > 75 ? 3 : 2);
+        
+        const state = ovenGauge < 40 ? 1 : ovenGauge > 75 ? 3 : 2;
+        
+        // 빵이 덜 익거나 탔을 때 점수 차감
+        if (state !== 2) {
+            totalScore -= 20;
+        }
+        
+        showResult(state);
     }
 
     function showResult(state) {
@@ -639,6 +657,10 @@
         };
         document.getElementById('result-img').src = files[selectedBread][state-1];
         document.getElementById('result-text').innerText = msgs[selectedBread][state-1];
+        
+        // 최종 점수 표시
+        document.getElementById('final-score').innerText = `최종 점수: ${totalScore}점`;
+        
         spawnSparkles();
     }
 
@@ -660,12 +682,14 @@
     function resetGame() {
         ingredientsStatus = { flour:false, salt:false, sugar:false, yeast:false, water:false };
         selectedBread = ''; ovenGauge = 30; isPouring = false;
+        totalScore = 100; // 재시작 시 점수 초기화
+        
         document.querySelectorAll('.ingredient').forEach(el => el.classList.remove('used'));
-        document.getElementById('to-shape-btn').classList.remove('show');
         document.getElementById('oven-on').classList.remove('active-oven');
         document.getElementById('oven-off').classList.add('active-oven');
+        
         changeScreen('screen-ingredients');
-        startTimer();
+        startTimer(); // 여기서 바로 0초로 초기화 되게끔 위에서 startTimer 함수 수정함
     }
 </script>
 </body>
