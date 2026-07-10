@@ -413,13 +413,12 @@
         isPouring = true;
         ingredientsStatus[name] = true;
 
-        const ingEl  = document.getElementById('ing-' + name);
+        const ingEl   = document.getElementById('ing-' + name);
         const ingImg = ingEl.querySelector('img');
         ingEl.classList.add('used');
 
         const bowlRect = document.getElementById('bowl-img').getBoundingClientRect();
         const bowlCX   = bowlRect.left + bowlRect.width  / 2;
-        // bowlRect.top 뒤에 - 60을 추가하여 그릇에 붙지 않고 조금 더 높은 공중에서 쏟아지도록 수정
         const bowlCY   = bowlRect.top - 60; 
 
         const ingRect = ingEl.getBoundingClientRect();
@@ -429,7 +428,6 @@
         const icon = document.createElement('img');
         icon.src = ingImg.src;
         icon.className = 'pour-icon';
-        // 커진 크기(210px)에 맞춰 중앙 정렬 오프셋을 -105px로 변경
         icon.style.cssText = `
             left: ${ingCX - 105}px;
             top:  ${ingCY - 105}px;
@@ -487,13 +485,14 @@
         changeScreen('screen-choose-shape');
     }
 
+    /* ===== [수정됨] 파티클이 그릇 아래로 쏟아지는 함수 ===== */
     function spawnParticles(name, cx, cy) {
         const configs = {
-            flour: { cls:'flour-p', count:35, minSize:14, maxSize:26 },
-            salt:  { cls:'salt-p',  count:32, minSize:6,  maxSize:12 },
-            sugar: { cls:'sugar-p', count:28, minSize:7,  maxSize:13 },
-            yeast: { cls:'yeast-p', count:24, minSize:9,  maxSize:16 },
-            water: { cls:'water-p', count:22, minSize:9,  maxSize:18 },
+            flour: { cls:'flour-p', count:40, minSize:14, maxSize:26 },
+            salt:  { cls:'salt-p',  count:35, minSize:6,  maxSize:12 },
+            sugar: { cls:'sugar-p', count:35, minSize:7,  maxSize:13 },
+            yeast: { cls:'yeast-p', count:30, minSize:9,  maxSize:16 },
+            water: { cls:'water-p', count:30, minSize:10, maxSize:18 },
         };
         const cfg = configs[name];
 
@@ -503,32 +502,34 @@
                 const size = cfg.minSize + Math.random() * (cfg.maxSize - cfg.minSize);
                 p.className = 'particle ' + cfg.cls;
                 p.style.width  = size + 'px';
-                p.style.height = name === 'water' ? (size * 1.4) + 'px' : size + 'px';
+                p.style.height = name === 'water' ? (size * 1.5) + 'px' : size + 'px';
 
-                const sx = cx + (Math.random() - 0.5) * 60;
-                const sy = cy;
+                // 스폰 시작 위치: 주전자 주둥이 근처에서 약간의 랜덤 오프셋
+                const sx = cx + (Math.random() - 0.5) * 40;
+                const sy = cy + 20; 
                 p.style.left = sx + 'px';
                 p.style.top  = sy + 'px';
 
-                const angle = (Math.random() * 140 + 20) * Math.PI / 180;
-                const dist  = 60 + Math.random() * 120;
-                const tx    = Math.cos(angle) * dist * (Math.random() > 0.5 ? 1 : -1);
-                const ty    = Math.sin(angle) * dist;
-                const dur   = 0.5 + Math.random() * 0.6;
+                // 이동 변화량 설계: 좌우 흔들림은 좁게 잡고 아래로 깊숙이 떨어지도록 수정
+                const tx = (Math.random() - 0.5) * 110;  // 그릇 너비 안쪽으로 쏟아지도록 제어
+                const ty = 120 + Math.random() * 140;   // 그릇 바닥을 향해 아래로 낙하하는 거리
+                const dur = 0.35 + Math.random() * 0.35; // 떨어지는 속도 (기존보다 역동적이게 단축)
 
-                p.style.transition = `transform ${dur}s ease-out, opacity ${dur}s ease-out`;
+                // 중력 가속도 느낌을 주기 위해 ease-in 사용
+                p.style.transition = `transform ${dur}s ease-in, opacity ${dur}s ease-in`;
                 p.style.opacity = '1';
                 document.body.appendChild(p);
 
                 requestAnimationFrame(() => {
                     setTimeout(() => {
-                        p.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random()*360}deg) scale(0.2)`;
+                        // 아래로 떨어지며 크기가 작아지고 회전함
+                        p.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random()*360}deg) scale(0.3)`;
                         p.style.opacity   = '0';
                     }, 20);
                 });
 
                 setTimeout(() => p.remove(), (dur + 0.1) * 1000);
-            }, i * 20);
+            }, i * 15); // 파티클 생성 간격을 줄여 뭉쳐서 쏟아지는 느낌 구현
         }
     }
 
