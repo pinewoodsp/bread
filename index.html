@@ -34,7 +34,7 @@
         }
         .screen.active { display: block; }
 
-        /* ===== [수정] 타이머 위치: 아주 조금 오른쪽, 아주 조금 밑으로 조정 ===== */
+        /* ===== 타이머 위치 고정 ===== */
         #timer-box {
             position: absolute;
             top: 10%;
@@ -78,14 +78,14 @@
             100% { transform: rotate(0deg) scale(1); }
         }
 
-        /* ===== [수정] 재료들: 초록색 선반 위로 위치 시키고 적당히 모아두기 ===== */
+        /* ===== [수정] 재료들: 답답하지 않게 크기를 시원하게 키움 ===== */
         .ingredients-list {
             position: absolute;
-            top: 58%; /* 초록색 선반 높이에 딱 맞춤 */
+            top: 50%; /* 커진 크기에 맞춰 선반 위 배치 조정 */
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 35px; /* 서로 자연스럽게 모여 있도록 간격 좁힘 */
+            gap: 30px; 
             align-items: flex-end;
             z-index: 10; 
         }
@@ -109,19 +109,19 @@
             filter: grayscale(0.8);
         }
         .ingredient img {
-            width: 130px; /* 선반 비율에 맞춰 크기 최적화 */
-            height: 130px; 
+            width: 190px; /* 너무 작지 않고 보기 편한 크기로 상향 */
+            height: 190px; 
             object-fit: contain;
             filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
         }
 
-        /* ===== [수정] 날아가는 아이콘 크기 매칭 ===== */
+        /* ===== [수정] 날아가는 아이콘 크기 및 매칭 ===== */
         .pour-icon {
             position: fixed;
             pointer-events: none;
             z-index: 9998;
-            width: 110px; 
-            height: 110px;
+            width: 150px; 
+            height: 150px;
             object-fit: contain;
             filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
         }
@@ -430,10 +430,10 @@
         icon.src = ingImg.src;
         icon.className = 'pour-icon';
         
-        // [수정] 아이콘 절반 크기(55px) 기준으로 중심축 정렬 계산
+        // [수정] 아이콘 절반 크기(75px) 기준으로 중심축 정렬 계산
         icon.style.cssText = `
-            left: ${ingCX - 55}px;
-            top:  ${ingCY - 55}px;
+            left: ${ingCX - 75}px;
+            top:  ${ingCY - 75}px;
             transition: left 0.5s cubic-bezier(0.4,0,0.2,1),
                         top  0.5s cubic-bezier(0.4,0,0.2,1),
                         transform 0.5s ease;
@@ -441,8 +441,8 @@
         document.body.appendChild(icon);
 
         setTimeout(() => {
-            icon.style.left = (bowlCX - 55) + 'px';
-            icon.style.top  = (bowlCY - 55) + 'px';
+            icon.style.left = (bowlCX - 75) + 'px';
+            icon.style.top  = (bowlCY - 75) + 'px';
         }, 20);
 
         setTimeout(() => {
