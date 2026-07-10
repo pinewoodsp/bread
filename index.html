@@ -34,12 +34,13 @@
         }
         .screen.active { display: block; }
 
-        /* ===== 타이머 (전체 화면 적용으로 z-index 추가) ===== */
+        /* ===== [수정됨] 타이머 위치를 배경 왼쪽 위 네모칸 정중앙으로 매칭 ===== */
         #timer-box {
             position: absolute;
-            top: 3.5%;
-            left: 13%;
-            width: 160px;
+            top: 8.4%;
+            left: 20.5%;
+            transform: translate(-50%, -50%);
+            width: 140px;
             text-align: center;
             font-size: 1.4rem;
             font-weight: bold;
@@ -108,8 +109,8 @@
             filter: grayscale(0.8);
         }
         .ingredient img {
-            width: 260px; /* 재료 크기 기존 220px에서 상향 */
-            height: 260px; /* 재료 크기 기존 220px에서 상향 */
+            width: 260px; 
+            height: 260px; 
             object-fit: contain;
             filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
         }
@@ -119,7 +120,7 @@
             position: fixed;
             pointer-events: none;
             z-index: 9998;
-            width: 210px; /* 날아가는 이미지 크기도 재료 크기에 맞춰 상향 */
+            width: 210px; 
             height: 210px;
             object-fit: contain;
             filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
@@ -485,7 +486,6 @@
         changeScreen('screen-choose-shape');
     }
 
-    /* ===== [수정됨] 수직 방향 일자로 떨어지는 파티클 함수 ===== */
     function spawnParticles(name, cx, cy) {
         const configs = {
             flour: { cls:'flour-p', count:40, minSize:14, maxSize:26 },
@@ -504,15 +504,13 @@
                 p.style.width  = size + 'px';
                 p.style.height = name === 'water' ? (size * 1.5) + 'px' : size + 'px';
 
-                // 줄기 형태로 보이게끔 생성되는 좌우 범위를 좁게 설정 (20px 범위)
                 const sx = cx + (Math.random() - 0.5) * 20; 
                 const sy = cy + 20; 
                 p.style.left = sx + 'px';
                 p.style.top  = sy + 'px';
 
-                // tx를 0으로 고정하여 좌우 이동 없이 그대로 밑으로만 떨어지게 처리!
                 const tx = 0;  
-                const ty = 140 + Math.random() * 120; // 그릇 바닥까지 떨어지는 수직 거리
+                const ty = 140 + Math.random() * 120; 
                 const dur = 0.4 + Math.random() * 0.3; 
 
                 p.style.transition = `transform ${dur}s ease-in, opacity ${dur}s ease-in`;
