@@ -108,17 +108,10 @@
             filter: grayscale(0.8);
         }
         .ingredient img {
-            width: 220px;
-            height: 220px;
+            width: 260px; /* 재료 크기 기존 220px에서 상향 */
+            height: 260px; /* 재료 크기 기존 220px에서 상향 */
             object-fit: contain;
             filter: drop-shadow(0 10px 16px rgba(0,0,0,0.18));
-        }
-        .ing-label {
-            font-size: 20px;
-            color: #5d4037;
-            font-weight: bold;
-            margin-top: 6px;
-            text-shadow: 0 2px 6px rgba(255,255,255,0.9);
         }
 
         /* ===== 날아가는 아이콘 & 파티클 ===== */
@@ -126,8 +119,8 @@
             position: fixed;
             pointer-events: none;
             z-index: 9998;
-            width: 180px;
-            height: 180px;
+            width: 210px; /* 날아가는 이미지 크기도 재료 크기에 맞춰 상향 */
+            height: 210px;
             object-fit: contain;
             filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
         }
@@ -144,7 +137,7 @@
         .water-p { background: rgba(100,180,255,0.85); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
         .yeast-p { background: #f9e4b7; border: 1px solid #e0c070; }
 
-        /* ===== 구우러 가기 버튼 (수정됨: 항상 보이게 변경) ===== */
+        /* ===== 구우러 가기 버튼 ===== */
         #to-shape-btn {
             position: absolute;
             bottom: 3%;
@@ -157,7 +150,7 @@
             font-size: 18px;
             font-family: 'Malgun Gothic', sans-serif;
             cursor: pointer;
-            display: block; /* 항상 보이게 변경 */
+            display: block;
             box-shadow: 0 4px 16px rgba(230,126,34,0.45);
             transition: transform 0.15s;
             z-index: 100;
@@ -250,7 +243,6 @@
         }
         #result-text { font-size: 22px; font-weight: bold; color: #2c3e50; text-align: center; }
         
-        /* 점수 텍스트 추가 */
         #final-score { font-size: 24px; font-weight: bold; color: #d35400; margin-top: 5px; }
         
         #restart-btn {
@@ -299,23 +291,18 @@
         <div class="ingredients-list">
             <div class="ingredient" id="ing-flour" onclick="clickIngredient('flour', event)">
                 <img src="flour.png" alt="밀가루">
-                <div class="ing-label">밀가루</div>
             </div>
             <div class="ingredient" id="ing-salt" onclick="clickIngredient('salt', event)">
                 <img src="salt.png" alt="소금">
-                <div class="ing-label">소금</div>
             </div>
             <div class="ingredient" id="ing-sugar" onclick="clickIngredient('sugar', event)">
                 <img src="sugar.png" alt="설탕">
-                <div class="ing-label">설탕</div>
             </div>
             <div class="ingredient" id="ing-yeast" onclick="clickIngredient('yeast', event)">
                 <img src="yeast.png" alt="이스트">
-                <div class="ing-label">이스트</div>
             </div>
             <div class="ingredient" id="ing-water" onclick="clickIngredient('water', event)">
                 <img src="water.png" alt="물">
-                <div class="ing-label">물</div>
             </div>
         </div>
 
@@ -391,12 +378,12 @@
     let timerSec = 0, timerInterval;
     let isPouring = false;
     
-    let totalScore = 100; // 게임 점수 변수 추가
+    let totalScore = 100;
 
     function startTimer() {
         clearInterval(timerInterval);
         timerSec = 0;
-        document.getElementById('timer-box').textContent = '00:00'; // 시작하자마자 0초로 즉시 갱신
+        document.getElementById('timer-box').textContent = '00:00';
         timerInterval = setInterval(() => {
             timerSec++;
             const m = String(Math.floor(timerSec/60)).padStart(2,'0');
@@ -432,7 +419,8 @@
 
         const bowlRect = document.getElementById('bowl-img').getBoundingClientRect();
         const bowlCX   = bowlRect.left + bowlRect.width  / 2;
-        const bowlCY   = bowlRect.top  + bowlRect.height * 0.25;
+        // bowlRect.top 뒤에 - 60을 추가하여 그릇에 붙지 않고 조금 더 높은 공중에서 쏟아지도록 수정
+        const bowlCY   = bowlRect.top - 60; 
 
         const ingRect = ingEl.getBoundingClientRect();
         const ingCX   = ingRect.left + ingRect.width  / 2;
@@ -441,9 +429,10 @@
         const icon = document.createElement('img');
         icon.src = ingImg.src;
         icon.className = 'pour-icon';
+        // 커진 크기(210px)에 맞춰 중앙 정렬 오프셋을 -105px로 변경
         icon.style.cssText = `
-            left: ${ingCX - 90}px;
-            top:  ${ingCY - 90}px;
+            left: ${ingCX - 105}px;
+            top:  ${ingCY - 105}px;
             transition: left 0.5s cubic-bezier(0.4,0,0.2,1),
                         top  0.5s cubic-bezier(0.4,0,0.2,1),
                         transform 0.5s ease;
@@ -451,8 +440,8 @@
         document.body.appendChild(icon);
 
         setTimeout(() => {
-            icon.style.left = (bowlCX - 90) + 'px';
-            icon.style.top  = (bowlCY - 90) + 'px';
+            icon.style.left = (bowlCX - 105) + 'px';
+            icon.style.top  = (bowlCY - 105) + 'px';
         }, 20);
 
         setTimeout(() => {
@@ -485,7 +474,6 @@
         }, 1050);
     }
 
-    // 재료 안 넣었을 때 점수 깎이는 로직 추가
     function goToShape() {
         let missedCount = 0;
         for(let key in ingredientsStatus) {
@@ -578,7 +566,7 @@
             timingSuccesses++;
             showToast('성공! 👏');
         } else {
-            totalScore -= 10; // 실패시 점수 깎임
+            totalScore -= 10;
             showToast('아깝다! 점수 깎임 😭');
         }
         timingAttempts--;
@@ -598,7 +586,6 @@
         clearInterval(ovenInterval);
         ovenInterval = setInterval(() => {
             ovenTimeLeft--;
-            // 오븐 난이도 상승 (기존 0.6에서 1.5로 더 빠르게 줄어들게 변경)
             if (ovenGauge > 0) ovenGauge -= 1.5; 
             updateOvenUI();
             if (ovenTimeLeft <= 0) endOvenGame();
@@ -637,7 +624,6 @@
         
         const state = ovenGauge < 40 ? 1 : ovenGauge > 75 ? 3 : 2;
         
-        // 빵이 덜 익거나 탔을 때 점수 차감
         if (state !== 2) {
             totalScore -= 20;
         }
@@ -658,7 +644,6 @@
         document.getElementById('result-img').src = files[selectedBread][state-1];
         document.getElementById('result-text').innerText = msgs[selectedBread][state-1];
         
-        // 최종 점수 표시
         document.getElementById('final-score').innerText = `최종 점수: ${totalScore}점`;
         
         spawnSparkles();
@@ -682,14 +667,14 @@
     function resetGame() {
         ingredientsStatus = { flour:false, salt:false, sugar:false, yeast:false, water:false };
         selectedBread = ''; ovenGauge = 30; isPouring = false;
-        totalScore = 100; // 재시작 시 점수 초기화
+        totalScore = 100;
         
         document.querySelectorAll('.ingredient').forEach(el => el.classList.remove('used'));
         document.getElementById('oven-on').classList.remove('active-oven');
         document.getElementById('oven-off').classList.add('active-oven');
         
         changeScreen('screen-ingredients');
-        startTimer(); // 여기서 바로 0초로 초기화 되게끔 위에서 startTimer 함수 수정함
+        startTimer();
     }
 </script>
 </body>
